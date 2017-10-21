@@ -16,17 +16,23 @@ module.exports = function(options) {
         	
         	//解析html中的运行参数
         	var param = html.match(/<!-- *tranform.+?endtranform *-->/g);
-        	param = param.map(function(v){
-        		var tmp = v.split(/<!-- *tranform:(.*?)\((.*?)\) *-->/g);
-        		return {
-    	    		method: tmp[1] || '',
-    	    		data: tmp[2] || '',
-    	    		html : v.replace(/<\/*(!--|tpl).*?>/g, ''),
-    	    	};
-        	});
-        	
-        	//处理htmltojs方法的数据
-        	htmltojs(param, file);
+			
+			if ( param ){			
+				param = param.map(function(v){
+					var tmp = v.split(/<!-- *tranform:(.*?)\((.*?)\) *-->/g);
+					return {
+						method: tmp[1] || '',
+						data: tmp[2] || '',
+						html : v.replace(/<\/*(!--|tpl).*?>/g, ''),
+					};
+				});
+				
+				//处理htmltojs方法的数据
+				htmltojs(param, file);	
+			}
+			else{
+				
+			}
 	    	
 	    	cb();
 	    }
