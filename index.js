@@ -19,10 +19,11 @@ module.exports = function(options) {
 			
 			if ( param ){			
 				param = param.map(function(v){
-					var tmp = v.split(/<!-- *tranform:(.*?)\((.*?)\) *-->/g);
+					var tmp = v.split(/<!-- *tranform:(.*?)\((.*?)\)(\((.*?)\))* *-->/g);
 					return {
 						method: tmp[1] || '',
 						data: tmp[2] || '',
+						file : tmp[4] || '',
 						html : v.replace(/<\/*(!--|tpl).*?>/g, ''),
 					};
 				});
@@ -51,11 +52,27 @@ function htmltojs(param, file){
     
 	var dir = path.dirname(file.path);
 	var arr = tpl.match(/<script( \w+=['"][^'"]+['"])* src=['"](?!(http(s)*:|\/{2}))[^'"]+/g);
-	arr.forEach(function(v){
-		var f = path.normalize(dir + v.replace(/.+?src="/, '/'));
-    	var jsfile = fs.readFileSync(f, 'utf-8');
+	arr.map(function(v){
+		var filename = v.replace(/.+?src="/, '');
+		var readFile = false;
+		for(var d of param){
+			if( !d.file ){
+				readFile = true;
+				break;
+			}
+			
+			if( filename.match(d.file) ){
+				readFile = true;
+				break;
+			}
+		}		
+		if( !readFile ){
+			return true;
+		}
+		var f = path.normalize(dir + '/' + filename);
+		var jsfile = fs.readFileSync(f, 'utf-8');
     	
-    	param.forEach(function(d){
+    	param.map(function(d){
     		if( d.method === 'htmltojs' ){
         		//替换js内容
     			jsfile = jsfile.replace(d.data, "'"+d.html.replace(/\'/g,"\\'")+"'");    			
@@ -67,7 +84,7 @@ function htmltojs(param, file){
 	html = html.replace(/<!-- *tranform:[\s\S]+?endtranform *-->/g, '');
 	fs.writeFileSync( file.path, html);
 	
-    gutil.log('Finished:', file.path)    
+    //gutil.log('Finished:', file.path)    
 }
 
 function removeEnter(content){
