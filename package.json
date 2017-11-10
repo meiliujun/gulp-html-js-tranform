@@ -7,12 +7,16 @@
     "gulp": "^3.9.0"
   },
   "name": "gulp-html-js-tranform",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "将js中的获取元素内容直接替换成html中对应的字符串",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "meiliujun@126.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meiliujun/gulp-html-js-tranform"
+  },
   "license": "MIT"
 }
